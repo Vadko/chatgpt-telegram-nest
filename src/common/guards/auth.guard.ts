@@ -41,7 +41,7 @@ export class AuthGuard implements CanActivate {
           this.i18n.t('local.ACCOUNT_UNDER_REVIEW', { lang }),
         );
       case UserStatus.Blocked:
-        throw new TelegrafException('Unathorized');
+        throw new TelegrafException();
       default:
         throw new TelegrafException('Unathorized');
     }

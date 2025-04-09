@@ -8,6 +8,8 @@ export class TelegrafExceptionFilter implements ExceptionFilter {
     const telegrafHost = TelegrafArgumentsHost.create(host);
     const ctx = telegrafHost.getContext<TelegrafContext>();
 
-    await ctx.reply(exception.message);
+    if (exception.message) {
+      await ctx.reply(exception.message);
+    }
   }
 }
