@@ -12,6 +12,7 @@ import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from '../generated/i18n.generated';
 import { I18nTelegraf } from '../common/decorators/i18n-telegraf.decorator';
 import { TelegrafExceptionFilter } from '../common/filters/telegraf-exception.filter';
+import { UserStatus } from '../common/types/user-status.enum';
 
 @Update()
 @UseFilters(TelegrafExceptionFilter)
@@ -24,6 +25,38 @@ export class BotUpdate {
   @Start()
   async start(@Ctx() ctx: TelegrafContext, @I18nTelegraf() lang: string) {
     await ctx.reply(this.i18n.t('local.WELCOME_MESSAGE', { lang }));
+  }
+
+  @Command('identify')
+  async identifyCommand(
+    @Ctx() ctx: TelegrafContext,
+    @I18nTelegraf() lang: string,
+  ) {
+    const showVerifyMenu = () =>
+      ctx.reply(this.i18n.t('local.IDENTIFY_MESSAGE', { lang }), {
+        ...Markup.inlineKeyboard([
+          [
+            Markup.button.callback(
+              this.i18n.t('local.IDENTIFY_BUTTON_TEXT', { lang }),
+              'identify',
+            ),
+          ],
+        ]),
+      });
+
+    switch (ctx.user?.status) {
+      case UserStatus.Unverified:
+        await showVerifyMenu();
+        return;
+      case UserStatus.Verified:
+        await ctx.reply(this.i18n.t('local.ALREADY_VERIFIED', { lang }));
+        return;
+      case UserStatus.Blocked:
+        return;
+      default:
+        await showVerifyMenu();
+        return;
+    }
   }
 
   @Help()
@@ -42,6 +75,24 @@ export class BotUpdate {
         ],
       ]),
     });
+  }
+
+  @Action('identify')
+  async identifyAction(
+    @Ctx() ctx: TelegrafContext,
+    @I18nTelegraf() lang: string,
+  ) {
+    if (!ctx.callbackQuery?.message) {
+      return;
+    }
+
+    await ctx.answerCbQuery();
+
+    // TODO: Add verification logic
+
+    await ctx.editMessageText(
+      this.i18n.t('local.SENT_TO_VERIFICATION', { lang }),
+    );
   }
 
   @Action('select_gpt')

@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate {
         return true;
       case UserStatus.Unverified:
         throw new TelegrafException(
-          this.i18n.t('local.VERIFY_INSTRUCTIONS', { lang }),
+          this.i18n.t('local.UNVERIFIED_ERROR', { lang }),
         );
       case UserStatus.Reviewing:
         throw new TelegrafException(
