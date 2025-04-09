@@ -1,4 +1,4 @@
-import { Command, Ctx, Hears, Help, On, Start, Update } from 'nestjs-telegraf';
+import { Action, Command, Ctx, Help, On, Start, Update } from 'nestjs-telegraf';
 import { TelegrafContext } from '../common/interfaces/telegraf-context.interface';
 import { BotService } from './bot.service';
 import { concatMap, throttleTime } from 'rxjs';
@@ -32,45 +32,49 @@ export class BotUpdate {
   @Command('select')
   @UseGuards(AuthGuard)
   async selectModel(@Ctx() ctx: TelegrafContext, @I18nTelegraf() lang: string) {
-    await ctx.reply(
-      this.i18n.t('local.SELECT_MODEL', { lang }),
-      Markup.keyboard([['💬 ChatGPT', '🎨 DALL·E']])
-        .oneTime()
-        .resize(),
-    );
+    await ctx.reply(this.i18n.t('local.SELECT_MODEL', { lang }), {
+      ...Markup.inlineKeyboard([
+        [
+          Markup.button.callback('💬 ChatGPT', 'select_gpt'),
+          Markup.button.callback('🎨 DALL·E', 'select_dalle'),
+        ],
+      ]),
+    });
   }
 
-  @Hears('💬 ChatGPT')
-  @UseGuards(AuthGuard)
+  @Action('select_gpt')
   async selectChatGPT(
     @Ctx() ctx: TelegrafContext,
     @I18nTelegraf() lang: string,
   ) {
-    if (!ctx.message) {
+    if (!ctx.callbackQuery?.message) {
       return;
     }
 
+    await ctx.answerCbQuery();
+
     await this.botService.updateModelSetting(
-      ctx.message.chat.id.toString(),
+      ctx.callbackQuery.message.chat.id.toString(),
       AiModelType.GPT,
     );
 
-    await ctx.reply(this.i18n.t('local.SELECTED_CHATGPT', { lang }));
+    await ctx.editMessageText(this.i18n.t('local.SELECTED_CHATGPT', { lang }));
   }
 
-  @Hears('🎨 DALL·E')
-  @UseGuards(AuthGuard)
+  @Action('select_dalle')
   async selectDallE(@Ctx() ctx: TelegrafContext, @I18nTelegraf() lang: string) {
-    if (!ctx.message) {
+    if (!ctx.callbackQuery?.message) {
       return;
     }
 
+    await ctx.answerCbQuery();
+
     await this.botService.updateModelSetting(
-      ctx.message.chat.id.toString(),
+      ctx.callbackQuery.message.chat.id.toString(),
       AiModelType.DALLEE,
     );
 
-    await ctx.reply(this.i18n.t('local.SELECTED_DALLE', { lang }));
+    await ctx.editMessageText(this.i18n.t('local.SELECTED_DALLE', { lang }));
   }
 
   @On('photo')
