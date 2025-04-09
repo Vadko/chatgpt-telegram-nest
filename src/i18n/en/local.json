@@ -2,6 +2,8 @@
   "WELCOME_MESSAGE": "Welcome to the bot!",
   "HELP_MESSAGE": "Welcome to the bot!",
   "SELECT_MODEL": "Select model:",
+  "VERIFY_INSTRUCTIONS": "Please verify your identity by pressing button below. Your account will be manually reviewed.",
+  "ACCOUNT_UNDER_REVIEW": "Your account is verifying. We will let you know about verification status later",
   "SELECTED_CHATGPT": "Selected ChatGPT",
   "SELECTED_DALLE": "Selected DALL·E",
   "PROCESSING_IMAGE": "Processing your image...",

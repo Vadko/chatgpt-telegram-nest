@@ -9,6 +9,8 @@ export type I18nTranslations = {
         "WELCOME_MESSAGE": string;
         "HELP_MESSAGE": string;
         "SELECT_MODEL": string;
+        "VERIFY_INSTRUCTIONS": string;
+        "ACCOUNT_UNDER_REVIEW": string;
         "SELECTED_CHATGPT": string;
         "SELECTED_DALLE": string;
         "PROCESSING_IMAGE": string;

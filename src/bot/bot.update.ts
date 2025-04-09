@@ -6,13 +6,15 @@ import telegramifyMarkdown from 'telegramify-markdown';
 import { Markup } from 'telegraf';
 import { MessageProcessorParams } from './types/message-processor.type';
 import { AiModelType } from '../common/types/ai-model.enum';
-import { UseGuards } from '@nestjs/common';
+import { UseFilters, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from '../generated/i18n.generated';
 import { I18nTelegraf } from '../common/decorators/i18n-telegraf.decorator';
+import { TelegrafExceptionFilter } from '../common/filters/telegraf-exception.filter';
 
 @Update()
+@UseFilters(TelegrafExceptionFilter)
 export class BotUpdate {
   constructor(
     private readonly botService: BotService,
