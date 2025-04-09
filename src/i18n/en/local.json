@@ -1,0 +1,13 @@
+{
+  "WELCOME_MESSAGE": "Welcome to the bot!",
+  "HELP_MESSAGE": "Welcome to the bot!",
+  "SELECT_MODEL": "Select model:",
+  "SELECTED_CHATGPT": "Selected ChatGPT",
+  "SELECTED_DALLE": "Selected DALL·E",
+  "PROCESSING_IMAGE": "Processing your image...",
+  "PROCESSING_MESSAGE": "Processing your message...",
+  "TRANSCRIBING_VOICE": "Listening to your voice message...",
+  "PROCESSING_VOICE": "Listened your voice! Preparing reply for you...",
+  "DALLE_IMAGE_PROMPT_ERROR": "Not able to process image with DALL·E. Please use ChatGPT",
+  "GPT_DEFAULT_IMAGE_CAPTION_PROMPT": "Describe this photo"
+}

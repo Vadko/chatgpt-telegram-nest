@@ -6,8 +6,11 @@ import { Readable } from 'stream';
 import * as fs from 'fs';
 import path from 'path';
 import { convertOggToMp3 } from '../common/utils/ffmpeg';
-import { ResponseInputMessageContentList } from 'openai/resources/responses/responses';
-import { ResponseInputImage } from 'openai/src/resources/responses/responses';
+import {
+  ResponseInputImage,
+  ResponseInputMessageContentList,
+} from 'openai/resources/responses/responses';
+import { TelegrafException } from 'nestjs-telegraf';
 
 @Injectable()
 export class OpenaiService {
@@ -20,6 +23,23 @@ export class OpenaiService {
     this.client = new OpenAI({
       apiKey: this.configService.getOrThrow('OPENAI_API_KEY'),
     });
+  }
+
+  async processMediaRequest(prompt: string, _mediaUrls?: string[]) {
+    const response = await this.client.images.generate({
+      model: 'dall-e-3',
+      prompt,
+      n: 1,
+      size: '1024x1024',
+    });
+
+    const url = response.data[0].url;
+
+    if (url) {
+      return url;
+    } else {
+      throw new TelegrafException('Not able to generate image');
+    }
   }
 
   async processMessage(
@@ -105,3 +125,11 @@ export class OpenaiService {
     }
   }
 }
+
+// return this.client.images.generate({
+//   model: 'dall-e-3',
+//   response_format: 'url',
+//   prompt: message,
+//   n: 1,
+//   size: '1024x1024',
+// });

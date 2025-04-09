@@ -6,6 +6,8 @@ import { UserModule } from './user/user.module';
 import { BotModule } from './bot/bot.module';
 import { HealthModule } from './health/health.module';
 import { OpenaiModule } from './openai/openai.module';
+import { I18nModule } from 'nestjs-i18n';
+import path from 'path';
 
 @Module({
   imports: [
@@ -18,6 +20,19 @@ import { OpenaiModule } from './openai/openai.module';
           token: configService.getOrThrow('TELEGRAM_BOT_TOKEN'),
         };
       },
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      disableMiddleware: true,
+      typesOutputPath: path.join(
+        __dirname,
+        '../src/generated/i18n.generated.ts',
+      ),
+      resolvers: [],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

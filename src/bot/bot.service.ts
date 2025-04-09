@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { OpenaiService } from '../openai/openai.service';
-import { from, tap, filter, scan } from 'rxjs';
+import { filter, from, scan, tap } from 'rxjs';
+import { PromptProcessorParams } from './types/prompt-processor.type';
+import { AiModelType } from '../common/types/ai-model.enum';
 
 @Injectable()
 export class BotService {
@@ -9,6 +11,10 @@ export class BotService {
     private readonly userService: UserService,
     private readonly openAiService: OpenaiService,
   ) {}
+
+  async updateModelSetting(id: string, model: AiModelType) {
+    return await this.userService.updateModel(id, model);
+  }
 
   async updateConversation(id: string, conversationId: string) {
     const exists = await this.userService.getById(id);
@@ -19,9 +25,16 @@ export class BotService {
     }
   }
 
-  async processMessage$(text: string, chatId: number, mediaUrls?: string[]) {
-    const user = await this.userService.getById(chatId.toString());
+  async processMediaRequest({ text, mediaUrls }: PromptProcessorParams) {
+    return await this.openAiService.processMediaRequest(text, mediaUrls);
+  }
 
+  async processTextStream$({
+    user,
+    text,
+    chatId,
+    mediaUrls,
+  }: PromptProcessorParams) {
     const stream = await this.openAiService.processMessage(
       text,
       user?.conversationId,
