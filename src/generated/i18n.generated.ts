@@ -14,7 +14,6 @@ export type I18nTranslations = {
         "BLOCKED_MESSAGE_GROUP": string;
         "APPROVED_MESSAGE": string;
         "BLOCKED_MESSAGE": string;
-        "APPROVAL_CONGRATS": string;
     };
     "client": {
         "WELCOME_MESSAGE": string;
@@ -34,6 +33,13 @@ export type I18nTranslations = {
         "PROCESSING_VOICE": string;
         "DALLE_IMAGE_PROMPT_ERROR": string;
         "GPT_DEFAULT_IMAGE_CAPTION_PROMPT": string;
+        "APPROVAL_CONGRATS": string;
+        "LANGUAGE_MESSAGE": string;
+        "LANGUAGE_ENGLISH": string;
+        "LANGUAGE_RUSSIAN": string;
+        "LANGUAGE_UKRAINIAN": string;
+        "LANGUAGE_FRENCH": string;
+        "SELECTED_LANGUAGE": string;
     };
 };
 /* prettier-ignore */

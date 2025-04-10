@@ -1,19 +1,15 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { TelegrafException, TelegrafExecutionContext } from 'nestjs-telegraf';
 import { ClientTelegrafContext } from '../interfaces/telegraf-context.interface';
-import { UserService } from '../../user/user.service';
 import { UserStatus } from '../types/user-status.enum';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from '../../generated/i18n.generated';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private readonly usersService: UserService,
-    private readonly i18n: I18nService<I18nTranslations>,
-  ) {}
+  constructor(private readonly i18n: I18nService<I18nTranslations>) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext) {
     const ctx =
       TelegrafExecutionContext.create(
         context,
@@ -23,13 +19,9 @@ export class AuthGuard implements CanActivate {
       return false;
     }
 
-    const user = await this.usersService.getById(
-      ctx.message.chat.id.toString(),
-    );
+    const user = ctx.user;
 
     const fallbackLang = ctx.message.from.language_code ?? 'en';
-
-    ctx.user = user;
 
     switch (ctx.user?.status) {
       case UserStatus.Verified:

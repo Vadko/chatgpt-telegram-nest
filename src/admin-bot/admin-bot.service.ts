@@ -54,7 +54,7 @@ export class AdminBotService {
     await this.userService.updateVerificationStatus(id, UserStatus.Verified);
     await this.clientBot.telegram.sendMessage(
       id,
-      this.i18n.t('admin.APPROVAL_CONGRATS', { lang: user.lang }),
+      this.i18n.t('client.APPROVAL_CONGRATS', { lang: user.lang }),
     );
   }
 }

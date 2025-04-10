@@ -46,7 +46,6 @@ import path from 'path';
         __dirname,
         '../src/generated/i18n.generated.ts',
       ),
-      resolvers: [],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

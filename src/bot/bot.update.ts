@@ -1,4 +1,13 @@
-import { Action, Command, Ctx, Help, On, Start, Update } from 'nestjs-telegraf';
+import {
+  Action,
+  Command,
+  Ctx,
+  Help,
+  On,
+  Start,
+  TelegrafException,
+  Update,
+} from 'nestjs-telegraf';
 import { ClientTelegrafContext } from '../common/interfaces/telegraf-context.interface';
 import { BotService } from './bot.service';
 import { concatMap, throttleTime } from 'rxjs';
@@ -6,7 +15,7 @@ import telegramifyMarkdown from 'telegramify-markdown';
 import { Markup } from 'telegraf';
 import { MessageProcessorParams } from './types/message-processor.type';
 import { AiModelType } from '../common/types/ai-model.enum';
-import { UseFilters, UseGuards } from '@nestjs/common';
+import { UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from '../generated/i18n.generated';
@@ -14,8 +23,11 @@ import { I18nTelegraf } from '../common/decorators/i18n-telegraf.decorator';
 import { TelegrafExceptionFilter } from '../common/filters/telegraf-exception.filter';
 import { UserStatus } from '../common/types/user-status.enum';
 import { GroupGuard } from '../common/guards/group.guard';
+import { LANGUAGE_REGEX } from '../common/helpers/language-regex';
+import { UserInterceptor } from '../common/interceptors/user.interceptor';
 
 @Update()
+@UseInterceptors(UserInterceptor)
 @UseFilters(TelegrafExceptionFilter)
 export class BotUpdate {
   constructor(
@@ -27,6 +39,49 @@ export class BotUpdate {
   @UseGuards(GroupGuard)
   async start(@Ctx() ctx: ClientTelegrafContext, @I18nTelegraf() lang: string) {
     await ctx.reply(this.i18n.t('client.WELCOME_MESSAGE', { lang }));
+  }
+
+  @Help()
+  @UseGuards(GroupGuard)
+  async help(@Ctx() ctx: ClientTelegrafContext, @I18nTelegraf() lang: string) {
+    await ctx.reply(this.i18n.t('client.HELP_MESSAGE', { lang }));
+  }
+
+  @Command('language')
+  @UseGuards(GroupGuard)
+  async language(
+    @Ctx() ctx: ClientTelegrafContext,
+    @I18nTelegraf() lang: string,
+  ) {
+    await ctx.reply(this.i18n.t('client.LANGUAGE_MESSAGE', { lang }), {
+      ...Markup.inlineKeyboard([
+        [
+          Markup.button.callback(
+            this.i18n.t('client.LANGUAGE_UKRAINIAN', { lang }),
+            'language:uk',
+          ),
+        ],
+
+        [
+          Markup.button.callback(
+            this.i18n.t('client.LANGUAGE_RUSSIAN', { lang }),
+            'language:ru',
+          ),
+        ],
+        [
+          Markup.button.callback(
+            this.i18n.t('client.LANGUAGE_ENGLISH', { lang }),
+            'language:en',
+          ),
+        ],
+        [
+          Markup.button.callback(
+            this.i18n.t('client.LANGUAGE_FRENCH', { lang }),
+            'language:fr',
+          ),
+        ],
+      ]),
+    });
   }
 
   @Command('identify')
@@ -72,12 +127,6 @@ export class BotUpdate {
     }
   }
 
-  @Help()
-  @UseGuards(GroupGuard)
-  async help(@Ctx() ctx: ClientTelegrafContext, @I18nTelegraf() lang: string) {
-    await ctx.reply(this.i18n.t('client.HELP_MESSAGE', { lang }));
-  }
-
   @Command('select')
   @UseGuards(AuthGuard)
   @UseGuards(GroupGuard)
@@ -93,6 +142,30 @@ export class BotUpdate {
         ],
       ]),
     });
+  }
+
+  @Action(LANGUAGE_REGEX)
+  async switchLanguage(@Ctx() ctx: ClientTelegrafContext) {
+    if (!(ctx.callbackQuery?.message && 'data' in ctx.callbackQuery)) {
+      return;
+    }
+
+    const lang = ctx.callbackQuery.data.match(LANGUAGE_REGEX)?.[1];
+
+    if (!lang) {
+      throw new TelegrafException('Not found language');
+    }
+
+    await ctx.answerCbQuery();
+
+    await this.botService.updateLanguageSetting(
+      ctx.callbackQuery.message.chat.id.toString(),
+      lang,
+    );
+
+    await ctx.editMessageText(
+      this.i18n.t('client.SELECTED_LANGUAGE', { lang }),
+    );
   }
 
   @Action('identify')

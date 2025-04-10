@@ -55,6 +55,14 @@ export class UserService {
     return this.usersRepository.save(user);
   }
 
+  async updateLanguage(id: string, lang: string) {
+    const user = await this.getByIdOrThrow(id);
+
+    user.lang = lang;
+
+    return this.usersRepository.save(user);
+  }
+
   async updateVerificationStatus(id: string, status: UserStatus) {
     const user = await this.getByIdOrThrow(id);
 

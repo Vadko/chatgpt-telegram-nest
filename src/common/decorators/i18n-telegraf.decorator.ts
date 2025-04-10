@@ -11,8 +11,8 @@ export const I18nTelegraf = createParamDecorator(
 
     if (ctx.user) {
       return ctx.user.lang;
-    } else {
-      return ctx.message?.from.language_code ?? 'en';
     }
+
+    return ctx.message?.from.language_code ?? 'en';
   },
 );
