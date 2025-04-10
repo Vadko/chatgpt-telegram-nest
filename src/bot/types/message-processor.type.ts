@@ -1,8 +1,8 @@
-import { TelegrafContext } from '../../common/interfaces/telegraf-context.interface';
+import { ClientTelegrafContext } from '../../common/interfaces/telegraf-context.interface';
 import { User } from '../../user/user.entity';
 
 export type MessageProcessorParams = {
-  ctx: TelegrafContext;
+  ctx: ClientTelegrafContext;
   user: User | null;
   text: string;
   replyId: number;

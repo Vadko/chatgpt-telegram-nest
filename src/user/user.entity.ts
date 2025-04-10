@@ -18,4 +18,7 @@ export class User {
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.Unverified })
   status: UserStatus;
+
+  @Column({ default: 'en' })
+  lang: string;
 }

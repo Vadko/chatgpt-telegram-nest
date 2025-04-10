@@ -1,0 +1,8 @@
+{
+  "VERIFY_REQUEST": "User @{username} wants to use bot. Please verify him.",
+  "APPROVE_USER": "Approve",
+  "BLOCK_USER": "Block",
+  "APPROVED_MESSAGE": "User @{username} approved",
+  "BLOCKED_MESSAGE": "User @{username} blocked",
+  "APPROVAL_CONGRATS": "Congrats, you were approved"
+}

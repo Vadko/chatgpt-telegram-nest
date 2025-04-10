@@ -1,5 +1,5 @@
 import { Action, Command, Ctx, Help, On, Start, Update } from 'nestjs-telegraf';
-import { TelegrafContext } from '../common/interfaces/telegraf-context.interface';
+import { ClientTelegrafContext } from '../common/interfaces/telegraf-context.interface';
 import { BotService } from './bot.service';
 import { concatMap, throttleTime } from 'rxjs';
 import telegramifyMarkdown from 'telegramify-markdown';
@@ -23,51 +23,62 @@ export class BotUpdate {
   ) {}
 
   @Start()
-  async start(@Ctx() ctx: TelegrafContext, @I18nTelegraf() lang: string) {
-    await ctx.reply(this.i18n.t('local.WELCOME_MESSAGE', { lang }));
+  async start(@Ctx() ctx: ClientTelegrafContext, @I18nTelegraf() lang: string) {
+    await ctx.reply(this.i18n.t('client.WELCOME_MESSAGE', { lang }));
   }
 
   @Command('identify')
   async identifyCommand(
-    @Ctx() ctx: TelegrafContext,
+    @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,
   ) {
+    if (!ctx.message) {
+      return;
+    }
+
+    const status = await this.botService.getUserVeritificationStatus(
+      ctx.message.from.id.toString(),
+    );
+
     const showVerifyMenu = () =>
-      ctx.reply(this.i18n.t('local.IDENTIFY_MESSAGE', { lang }), {
+      ctx.reply(this.i18n.t('client.IDENTIFY_MESSAGE', { lang }), {
         ...Markup.inlineKeyboard([
           [
             Markup.button.callback(
-              this.i18n.t('local.IDENTIFY_BUTTON_TEXT', { lang }),
+              this.i18n.t('client.IDENTIFY_BUTTON_TEXT', { lang }),
               'identify',
             ),
           ],
         ]),
       });
 
-    switch (ctx.user?.status) {
+    switch (status) {
       case UserStatus.Unverified:
         await showVerifyMenu();
         return;
+      case UserStatus.Reviewing:
+        await ctx.reply(this.i18n.t('client.ACCOUNT_UNDER_REVIEW', { lang }));
+        return;
       case UserStatus.Verified:
-        await ctx.reply(this.i18n.t('local.ALREADY_VERIFIED', { lang }));
+        await ctx.reply(this.i18n.t('client.ALREADY_VERIFIED', { lang }));
         return;
       case UserStatus.Blocked:
-        return;
-      default:
-        await showVerifyMenu();
         return;
     }
   }
 
   @Help()
-  async help(@Ctx() ctx: TelegrafContext, @I18nTelegraf() lang: string) {
-    await ctx.reply(this.i18n.t('local.HELP_MESSAGE', { lang }));
+  async help(@Ctx() ctx: ClientTelegrafContext, @I18nTelegraf() lang: string) {
+    await ctx.reply(this.i18n.t('client.HELP_MESSAGE', { lang }));
   }
 
   @Command('select')
   @UseGuards(AuthGuard)
-  async selectModel(@Ctx() ctx: TelegrafContext, @I18nTelegraf() lang: string) {
-    await ctx.reply(this.i18n.t('local.SELECT_MODEL', { lang }), {
+  async selectModel(
+    @Ctx() ctx: ClientTelegrafContext,
+    @I18nTelegraf() lang: string,
+  ) {
+    await ctx.reply(this.i18n.t('client.SELECT_MODEL', { lang }), {
       ...Markup.inlineKeyboard([
         [
           Markup.button.callback('💬 ChatGPT', 'select_gpt'),
@@ -79,7 +90,7 @@ export class BotUpdate {
 
   @Action('identify')
   async identifyAction(
-    @Ctx() ctx: TelegrafContext,
+    @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,
   ) {
     if (!ctx.callbackQuery?.message) {
@@ -88,16 +99,20 @@ export class BotUpdate {
 
     await ctx.answerCbQuery();
 
-    // TODO: Add verification logic
+    await this.botService.sendToVerification(
+      ctx.callbackQuery.from.id.toString(),
+      ctx.callbackQuery.from.username ?? 'No username',
+      ctx.callbackQuery.from.language_code ?? 'en',
+    );
 
     await ctx.editMessageText(
-      this.i18n.t('local.SENT_TO_VERIFICATION', { lang }),
+      this.i18n.t('client.SENT_TO_VERIFICATION', { lang }),
     );
   }
 
   @Action('select_gpt')
   async selectChatGPT(
-    @Ctx() ctx: TelegrafContext,
+    @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,
   ) {
     if (!ctx.callbackQuery?.message) {
@@ -111,11 +126,14 @@ export class BotUpdate {
       AiModelType.GPT,
     );
 
-    await ctx.editMessageText(this.i18n.t('local.SELECTED_CHATGPT', { lang }));
+    await ctx.editMessageText(this.i18n.t('client.SELECTED_CHATGPT', { lang }));
   }
 
   @Action('select_dalle')
-  async selectDallE(@Ctx() ctx: TelegrafContext, @I18nTelegraf() lang: string) {
+  async selectDallE(
+    @Ctx() ctx: ClientTelegrafContext,
+    @I18nTelegraf() lang: string,
+  ) {
     if (!ctx.callbackQuery?.message) {
       return;
     }
@@ -127,13 +145,13 @@ export class BotUpdate {
       AiModelType.DALLEE,
     );
 
-    await ctx.editMessageText(this.i18n.t('local.SELECTED_DALLE', { lang }));
+    await ctx.editMessageText(this.i18n.t('client.SELECTED_DALLE', { lang }));
   }
 
   @On('photo')
   @UseGuards(AuthGuard)
   async processMessageWithPhoto(
-    @Ctx() ctx: TelegrafContext,
+    @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,
   ) {
     if (!(ctx.message && 'photo' in ctx.message)) {
@@ -149,7 +167,7 @@ export class BotUpdate {
     await ctx.sendChatAction('typing');
 
     const reply = await ctx.sendMessage(
-      this.i18n.t('local.PROCESSING_IMAGE', { lang }),
+      this.i18n.t('client.PROCESSING_IMAGE', { lang }),
     );
 
     const link = await ctx.telegram.getFileLink(image);
@@ -159,7 +177,7 @@ export class BotUpdate {
         ctx.message.chat.id,
         reply.message_id,
         undefined,
-        this.i18n.t('local.DALLE_IMAGE_PROMPT_ERROR', { lang }),
+        this.i18n.t('client.DALLE_IMAGE_PROMPT_ERROR', { lang }),
       );
     } else {
       await this.processMessageStream({
@@ -167,7 +185,7 @@ export class BotUpdate {
         user: ctx.user,
         text:
           ctx.message.caption ??
-          this.i18n.t('local.GPT_DEFAULT_IMAGE_CAPTION_PROMPT', { lang }),
+          this.i18n.t('client.GPT_DEFAULT_IMAGE_CAPTION_PROMPT', { lang }),
         replyId: reply.message_id,
         mediaUrls: [link.href],
       });
@@ -177,7 +195,7 @@ export class BotUpdate {
   @On('voice')
   @UseGuards(AuthGuard)
   async processAudio(
-    @Ctx() ctx: TelegrafContext,
+    @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,
   ) {
     if (!(ctx.message && 'voice' in ctx.message)) {
@@ -193,7 +211,7 @@ export class BotUpdate {
     await ctx.sendChatAction('typing');
 
     const reply = await ctx.sendMessage(
-      this.i18n.t('local.TRANSCRIBING_VOICE', { lang }),
+      this.i18n.t('client.TRANSCRIBING_VOICE', { lang }),
     );
 
     const voiceLink = await ctx.telegram.getFileLink(voice);
@@ -204,7 +222,7 @@ export class BotUpdate {
       ctx.message.chat.id,
       reply.message_id,
       undefined,
-      this.i18n.t('local.PROCESSING_VOICE', { lang }),
+      this.i18n.t('client.PROCESSING_VOICE', { lang }),
     );
 
     await this.processMessageStream({
@@ -218,7 +236,7 @@ export class BotUpdate {
   @On('message')
   @UseGuards(AuthGuard)
   async processMessage(
-    @Ctx() ctx: TelegrafContext,
+    @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,
   ) {
     if (!(ctx.message && 'text' in ctx.message)) {
@@ -228,7 +246,7 @@ export class BotUpdate {
     await ctx.sendChatAction('typing');
 
     const reply = await ctx.sendMessage(
-      this.i18n.t('local.PROCESSING_MESSAGE', { lang }),
+      this.i18n.t('client.PROCESSING_MESSAGE', { lang }),
     );
 
     if (ctx.user?.model === AiModelType.DALLEE) {

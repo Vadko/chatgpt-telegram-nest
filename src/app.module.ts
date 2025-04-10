@@ -7,6 +7,7 @@ import { BotModule } from './bot/bot.module';
 import { HealthModule } from './health/health.module';
 import { OpenaiModule } from './openai/openai.module';
 import { I18nModule } from 'nestjs-i18n';
+import { AdminBotModule } from './admin-bot/admin-bot.module';
 import path from 'path';
 
 @Module({
@@ -15,9 +16,22 @@ import path from 'path';
     TelegrafModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+      botName: 'skegg',
       useFactory: (configService: ConfigService) => {
         return {
           token: configService.getOrThrow('TELEGRAM_BOT_TOKEN'),
+          include: [BotModule],
+        };
+      },
+    }),
+    TelegrafModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      botName: 'admin',
+      useFactory: (configService: ConfigService) => {
+        return {
+          token: configService.getOrThrow('TELEGRAM_ADMIN_BOT_TOKEN'),
+          include: [AdminBotModule],
         };
       },
     }),
@@ -57,6 +71,7 @@ import path from 'path';
     BotModule,
     HealthModule,
     OpenaiModule,
+    AdminBotModule,
   ],
 })
 export class AppModule {}

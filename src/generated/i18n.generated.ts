@@ -5,7 +5,15 @@
 import { Path } from "nestjs-i18n";
 /* prettier-ignore */
 export type I18nTranslations = {
-    "local": {
+    "admin": {
+        "VERIFY_REQUEST": string;
+        "APPROVE_USER": string;
+        "BLOCK_USER": string;
+        "APPROVED_MESSAGE": string;
+        "BLOCKED_MESSAGE": string;
+        "APPROVAL_CONGRATS": string;
+    };
+    "client": {
         "WELCOME_MESSAGE": string;
         "HELP_MESSAGE": string;
         "SELECT_MODEL": string;

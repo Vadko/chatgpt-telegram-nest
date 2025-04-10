@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { TelegrafException, TelegrafExecutionContext } from 'nestjs-telegraf';
-import { TelegrafContext } from '../interfaces/telegraf-context.interface';
+import { ClientTelegrafContext } from '../interfaces/telegraf-context.interface';
 import { UserService } from '../../user/user.service';
 import { UserStatus } from '../types/user-status.enum';
 import { I18nService } from 'nestjs-i18n';
@@ -15,7 +15,9 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx =
-      TelegrafExecutionContext.create(context).getContext<TelegrafContext>();
+      TelegrafExecutionContext.create(
+        context,
+      ).getContext<ClientTelegrafContext>();
 
     if (!ctx.message) {
       return false;
@@ -25,7 +27,7 @@ export class AuthGuard implements CanActivate {
       ctx.message.chat.id.toString(),
     );
 
-    const lang = ctx.message.from.language_code ?? 'en';
+    const fallbackLang = ctx.message.from.language_code ?? 'en';
 
     ctx.user = user;
 
@@ -34,16 +36,24 @@ export class AuthGuard implements CanActivate {
         return true;
       case UserStatus.Unverified:
         throw new TelegrafException(
-          this.i18n.t('local.UNVERIFIED_ERROR', { lang }),
+          this.i18n.t('client.UNVERIFIED_ERROR', {
+            lang: user?.lang ?? fallbackLang,
+          }),
         );
       case UserStatus.Reviewing:
         throw new TelegrafException(
-          this.i18n.t('local.ACCOUNT_UNDER_REVIEW', { lang }),
+          this.i18n.t('client.ACCOUNT_UNDER_REVIEW', {
+            lang: user?.lang ?? fallbackLang,
+          }),
         );
       case UserStatus.Blocked:
         throw new TelegrafException();
       default:
-        throw new TelegrafException('Unathorized');
+        throw new TelegrafException(
+          this.i18n.t('client.UNVERIFIED_ERROR', {
+            lang: user?.lang ?? fallbackLang,
+          }),
+        );
     }
   }
 }
