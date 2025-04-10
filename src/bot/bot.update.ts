@@ -24,10 +24,8 @@ import { TelegrafExceptionFilter } from '../common/filters/telegraf-exception.fi
 import { UserStatus } from '../common/types/user-status.enum';
 import { GroupGuard } from '../common/guards/group.guard';
 import { LANGUAGE_REGEX } from '../common/helpers/language-regex';
-import { UserInterceptor } from '../common/interceptors/user.interceptor';
 
 @Update()
-@UseInterceptors(UserInterceptor)
 @UseFilters(TelegrafExceptionFilter)
 export class BotUpdate {
   constructor(

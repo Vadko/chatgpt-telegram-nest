@@ -9,18 +9,31 @@ import { OpenaiModule } from './openai/openai.module';
 import { I18nModule } from 'nestjs-i18n';
 import { AdminBotModule } from './admin-bot/admin-bot.module';
 import path from 'path';
+import { ClientTelegrafContext } from './common/interfaces/telegraf-context.interface';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TelegrafModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
+      imports: [ConfigModule, UserModule],
+      inject: [ConfigService, UserService],
       botName: 'client',
-      useFactory: (configService: ConfigService) => {
+      useFactory: (configService: ConfigService, userService: UserService) => {
         return {
           token: configService.getOrThrow('TELEGRAM_BOT_TOKEN'),
           include: [BotModule],
+          middlewares: [
+            async (ctx: ClientTelegrafContext, next) => {
+              if (ctx.message) {
+                ctx.user = await userService.getById(
+                  ctx.message.chat.id.toString(),
+                );
+              }
+
+              return await next();
+            },
+          ],
         };
       },
     }),
