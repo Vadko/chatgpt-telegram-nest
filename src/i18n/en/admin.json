@@ -1,7 +1,10 @@
 {
-  "VERIFY_REQUEST": "User @{username} wants to use bot. Please verify him.",
+  "VERIFY_REQUEST": "User @{username} with id {id} wants to use bot. Please verify him.",
+  "VERIFY_REQUEST_GROUP": "User @{username} wants to use bot in group id {id}. Please verify him.",
   "APPROVE_USER": "Approve",
   "BLOCK_USER": "Block",
+  "APPROVED_MESSAGE_GROUP": "User @{username} request to use bot in group approved",
+  "BLOCKED_MESSAGE_GROUP": "User @{username} request to use bot in group blocked",
   "APPROVED_MESSAGE": "User @{username} approved",
   "BLOCKED_MESSAGE": "User @{username} blocked",
   "APPROVAL_CONGRATS": "Congrats, you were approved"

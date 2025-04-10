@@ -13,6 +13,7 @@ import { I18nTranslations } from '../generated/i18n.generated';
 import { I18nTelegraf } from '../common/decorators/i18n-telegraf.decorator';
 import { TelegrafExceptionFilter } from '../common/filters/telegraf-exception.filter';
 import { UserStatus } from '../common/types/user-status.enum';
+import { GroupGuard } from '../common/guards/group.guard';
 
 @Update()
 @UseFilters(TelegrafExceptionFilter)
@@ -23,11 +24,13 @@ export class BotUpdate {
   ) {}
 
   @Start()
+  @UseGuards(GroupGuard)
   async start(@Ctx() ctx: ClientTelegrafContext, @I18nTelegraf() lang: string) {
     await ctx.reply(this.i18n.t('client.WELCOME_MESSAGE', { lang }));
   }
 
   @Command('identify')
+  @UseGuards(GroupGuard)
   async identifyCommand(
     @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,
@@ -36,8 +39,8 @@ export class BotUpdate {
       return;
     }
 
-    const status = await this.botService.getUserVeritificationStatus(
-      ctx.message.from.id.toString(),
+    const status = await this.botService.getUserVerificationStatus(
+      ctx.message.chat.id.toString(),
     );
 
     const showVerifyMenu = () =>
@@ -64,16 +67,20 @@ export class BotUpdate {
         return;
       case UserStatus.Blocked:
         return;
+      default:
+        await showVerifyMenu();
     }
   }
 
   @Help()
+  @UseGuards(GroupGuard)
   async help(@Ctx() ctx: ClientTelegrafContext, @I18nTelegraf() lang: string) {
     await ctx.reply(this.i18n.t('client.HELP_MESSAGE', { lang }));
   }
 
   @Command('select')
   @UseGuards(AuthGuard)
+  @UseGuards(GroupGuard)
   async selectModel(
     @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,
@@ -99,11 +106,12 @@ export class BotUpdate {
 
     await ctx.answerCbQuery();
 
-    await this.botService.sendToVerification(
-      ctx.callbackQuery.from.id.toString(),
-      ctx.callbackQuery.from.username ?? 'No username',
-      ctx.callbackQuery.from.language_code ?? 'en',
-    );
+    await this.botService.sendToVerification({
+      id: ctx.callbackQuery.message.chat.id.toString(),
+      isGroup: ctx.callbackQuery.message.chat.type !== 'private',
+      username: ctx.callbackQuery.from.username ?? 'No username',
+      lang: ctx.callbackQuery.from.language_code ?? 'en',
+    });
 
     await ctx.editMessageText(
       this.i18n.t('client.SENT_TO_VERIFICATION', { lang }),
@@ -150,6 +158,7 @@ export class BotUpdate {
 
   @On('photo')
   @UseGuards(AuthGuard)
+  @UseGuards(GroupGuard)
   async processMessageWithPhoto(
     @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,
@@ -194,6 +203,7 @@ export class BotUpdate {
 
   @On('voice')
   @UseGuards(AuthGuard)
+  @UseGuards(GroupGuard)
   async processAudio(
     @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,
@@ -235,6 +245,7 @@ export class BotUpdate {
 
   @On('message')
   @UseGuards(AuthGuard)
+  @UseGuards(GroupGuard)
   async processMessage(
     @Ctx() ctx: ClientTelegrafContext,
     @I18nTelegraf() lang: string,

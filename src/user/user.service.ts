@@ -4,6 +4,7 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { AiModelType } from '../common/types/ai-model.enum';
 import { UserStatus } from '../common/types/user-status.enum';
+import { ChatType } from '../common/types/chat-type.enum';
 
 @Injectable()
 export class UserService {
@@ -12,7 +13,7 @@ export class UserService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  create(id: string, lang?: string, conversationId?: string) {
+  create(id: string, type: ChatType, lang?: string, conversationId?: string) {
     const user = new User();
 
     user.id = id;
@@ -21,6 +22,7 @@ export class UserService {
     user.status = UserStatus.Unverified;
     user.model = AiModelType.GPT;
     user.lang = lang ?? 'en';
+    user.type = type;
 
     return this.usersRepository.save(user);
   }

@@ -16,7 +16,7 @@ import path from 'path';
     TelegrafModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      botName: 'skegg',
+      botName: 'client',
       useFactory: (configService: ConfigService) => {
         return {
           token: configService.getOrThrow('TELEGRAM_BOT_TOKEN'),

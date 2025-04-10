@@ -1,6 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { AiModelType } from '../common/types/ai-model.enum';
 import { UserStatus } from '../common/types/user-status.enum';
+import { ChatType } from '../common/types/chat-type.enum';
 
 @Entity()
 export class User {
@@ -12,6 +13,9 @@ export class User {
 
   @Column({ type: 'date' })
   createdAt: string;
+
+  @Column({ type: 'enum', enum: ChatType })
+  type: ChatType;
 
   @Column({ type: 'enum', enum: AiModelType, default: AiModelType.GPT })
   model: AiModelType;

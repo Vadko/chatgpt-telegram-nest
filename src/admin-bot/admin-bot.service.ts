@@ -18,23 +18,26 @@ export class AdminBotService {
     private readonly userService: UserService,
     private readonly i18n: I18nService<I18nTranslations>,
     @InjectBot('admin') private adminBot: Telegraf<AdminTelegrafContext>,
-    @InjectBot('skegg') private clientBot: Telegraf<ClientTelegrafContext>,
+    @InjectBot('client') private clientBot: Telegraf<ClientTelegrafContext>,
   ) {}
 
-  async sendToReview(id: string, username: string) {
+  async sendToReview(id: string, isGroup: boolean, username: string) {
     await this.adminBot.telegram.sendMessage(
       this.configService.getOrThrow('TELEGRAM_ADMIN_ID'),
-      this.i18n.t('admin.VERIFY_REQUEST', { args: { username } }),
+      this.i18n.t(
+        isGroup ? 'admin.VERIFY_REQUEST_GROUP' : 'admin.VERIFY_REQUEST',
+        { args: { username, id } },
+      ),
       {
         ...Markup.inlineKeyboard([
           [
             Markup.button.callback(
               this.i18n.t('admin.APPROVE_USER'),
-              `approve:${id}:${username}`,
+              `approve:${id}:${username}:${isGroup}`,
             ),
             Markup.button.callback(
               this.i18n.t('admin.BLOCK_USER'),
-              `block:${id}:${username}`,
+              `block:${id}:${username}:${isGroup}`,
             ),
           ],
         ]),

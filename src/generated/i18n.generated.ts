@@ -7,8 +7,11 @@ import { Path } from "nestjs-i18n";
 export type I18nTranslations = {
     "admin": {
         "VERIFY_REQUEST": string;
+        "VERIFY_REQUEST_GROUP": string;
         "APPROVE_USER": string;
         "BLOCK_USER": string;
+        "APPROVED_MESSAGE_GROUP": string;
+        "BLOCKED_MESSAGE_GROUP": string;
         "APPROVED_MESSAGE": string;
         "BLOCKED_MESSAGE": string;
         "APPROVAL_CONGRATS": string;
