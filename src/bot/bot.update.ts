@@ -125,6 +125,25 @@ export class BotUpdate {
     }
   }
 
+  @Command('reset')
+  @UseGuards(AuthGuard)
+  @UseGuards(GroupGuard)
+  async resetConversation(
+    @Ctx() ctx: ClientTelegrafContext,
+    @I18nTelegraf() lang: string,
+  ) {
+    if (!ctx.message) {
+      return;
+    }
+
+    await this.botService.updateConversation(
+      ctx.message.chat.id.toString(),
+      undefined,
+    );
+
+    // await ctx.reply(this.i18n.t('client.RESET_CONVERSATION', { lang }));
+  }
+
   @Command('select')
   @UseGuards(AuthGuard)
   @UseGuards(GroupGuard)

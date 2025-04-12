@@ -1,6 +1,6 @@
 {
   "WELCOME_MESSAGE": "Salut ! Je suis Skegg, ton assistant IA. Je peux répondre à tes questions, générer des images et bien plus encore. Envoie-moi simplement un message, et je m’occupe du reste !",
-  "HELP_MESSAGE": "Tu peux m’envoyer du texte, des messages vocaux ou des images (avec une légende pour plus de contexte). J’utiliserai ChatGPT pour y répondre. Pour générer des images, envoie un prompt texte, et DALL·E fera le reste.\n\nCommandes :\n/select – choisir entre ChatGPT ou DALL·E\n/identify – vérifier ton compte pour accéder au bot\n/language – changer la langue du bot\n/help – afficher ce message d’aide",
+  "HELP_MESSAGE": "Tu peux m’envoyer du texte, des messages vocaux ou des images (avec une légende pour plus de contexte). J’utiliserai ChatGPT pour y répondre. Pour générer des images, envoie un prompt texte, et DALL·E fera le reste.\n\nCommandes :\n/select – choisir entre ChatGPT ou DALL·E\n/identify – vérifier ton compte pour accéder au bot\n/language – changer la langue du bot\n/reset – réinitialiser l’historique de conversation\n/help – afficher ce message d’aide",
   "SELECT_MODEL": "Choisis un modèle :\n- DALL·E pour créer des images\n- ChatGPT pour discuter et analyser des images",
   "ACCOUNT_UNDER_REVIEW": "Ton compte est en cours de vérification. Tu seras notifié une fois le processus terminé.",
   "IDENTIFY_MESSAGE": "Merci de vérifier ton compte en cliquant sur le bouton ci-dessous. Nous examinerons ta demande sous peu.",
@@ -22,5 +22,6 @@
   "LANGUAGE_RUSSIAN": "Russe",
   "LANGUAGE_UKRAINIAN": "Ukrainien",
   "LANGUAGE_FRENCH": "Français",
-  "SELECTED_LANGUAGE": "Vous avez sélectionné français."
+  "SELECTED_LANGUAGE": "Vous avez sélectionné français.",
+  "RESET_CONVERSATION": "L’historique de la conversation a été réinitialisé. On repart de zéro !"
 }

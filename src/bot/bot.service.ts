@@ -45,7 +45,7 @@ export class BotService {
     return await this.userService.updateLanguage(id, lang);
   }
 
-  async updateConversation(id: string, conversationId: string) {
+  async updateConversation(id: string, conversationId?: string) {
     return this.userService.updateConversationId(id, conversationId);
   }
 

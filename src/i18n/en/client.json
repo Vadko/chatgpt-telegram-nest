@@ -1,6 +1,6 @@
 {
   "WELCOME_MESSAGE": "Hey there! I'm Skegg, your friendly AI assistant. I can answer your questions, generate images, and much more. Just send me a message and I’ll do my best to help!",
-  "HELP_MESSAGE": "You can send me text, voice messages, or images (with captions for extra context), and I’ll handle them using ChatGPT. For image generation, just send a text prompt and I’ll use DALL·E.\n\nCommands:\n/select – Choose between ChatGPT or DALL·E\n/identify – Verify your account to access the bot\n/language – Switch the bot's language\n/help – Show this help message",
+  "HELP_MESSAGE": "You can send me text, voice messages, or images (with captions for extra context), and I’ll handle them using ChatGPT. For image generation, just send a text prompt and I’ll use DALL·E.\n\nCommands:\n/select – Choose between ChatGPT or DALL·E\n/identify – Verify your account to access the bot\n/language – Switch the bot's language\n/reset – Reset conversation history\n/help – Show this help message",
   "SELECT_MODEL": "Choose a model to work with:\n- DALL·E for image generation\n- ChatGPT for conversation and image analysis",
   "ACCOUNT_UNDER_REVIEW": "Your account is currently under review. We'll notify you once the verification is complete.",
   "IDENTIFY_MESSAGE": "Please verify your account by clicking the button below. Our team will review your request shortly.",
@@ -22,5 +22,6 @@
   "LANGUAGE_RUSSIAN": "Russian",
   "LANGUAGE_UKRAINIAN": "Ukrainian",
   "LANGUAGE_FRENCH": "French",
-  "SELECTED_LANGUAGE": "You have selected English."
+  "SELECTED_LANGUAGE": "You have selected English.",
+  "RESET_CONVERSATION": "Conversation history has been reset. You’re starting fresh!"
 }
