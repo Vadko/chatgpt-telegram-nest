@@ -141,7 +141,7 @@ export class BotUpdate {
       undefined,
     );
 
-    // await ctx.reply(this.i18n.t('client.RESET_CONVERSATION', { lang }));
+    await ctx.reply(this.i18n.t('client.RESET_CONVERSATION', { lang }));
   }
 
   @Command('select')

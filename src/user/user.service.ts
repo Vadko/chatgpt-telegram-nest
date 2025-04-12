@@ -42,7 +42,7 @@ export class UserService {
   async updateConversationId(id: string, conversationId?: string) {
     const user = await this.getByIdOrThrow(id);
 
-    user.conversationId = conversationId;
+    user.conversationId = conversationId ?? null;
 
     return this.usersRepository.save(user);
   }

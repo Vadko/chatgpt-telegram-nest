@@ -8,8 +8,8 @@ export class User {
   @PrimaryColumn()
   id: string;
 
-  @Column({ nullable: true })
-  conversationId?: string;
+  @Column({ type: 'varchar', nullable: true })
+  conversationId?: string | null;
 
   @Column({ type: 'date' })
   createdAt: string;

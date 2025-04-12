@@ -44,7 +44,7 @@ export class OpenaiService {
 
   async processMessage(
     message: string,
-    conversationId?: string,
+    conversationId?: string | null,
     mediaUrls?: string[],
   ) {
     const content: string | ResponseInputMessageContentList = !mediaUrls

@@ -40,6 +40,7 @@ export type I18nTranslations = {
         "LANGUAGE_UKRAINIAN": string;
         "LANGUAGE_FRENCH": string;
         "SELECTED_LANGUAGE": string;
+        "RESET_CONVERSATION": string;
     };
 };
 /* prettier-ignore */
