@@ -15,7 +15,7 @@ import telegramifyMarkdown from 'telegramify-markdown';
 import { Markup } from 'telegraf';
 import { MessageProcessorParams } from './types/message-processor.type';
 import { AiModelType } from '../common/types/ai-model.enum';
-import { UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
+import { UseFilters, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from '../generated/i18n.generated';

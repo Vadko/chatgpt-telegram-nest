@@ -13,6 +13,10 @@ export const I18nTelegraf = createParamDecorator(
       return ctx.user.lang;
     }
 
-    return ctx.message?.from.language_code ?? 'en';
+    return (
+      ctx.message?.from.language_code ??
+      ctx.callbackQuery?.from.language_code ??
+      'en'
+    );
   },
 );
